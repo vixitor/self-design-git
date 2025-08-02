@@ -4,11 +4,11 @@ def main(git_dir, files):
     for file in files:
         sha1 = git_blob_sha1(file)
 
-        objects_dir = os.path.join(git_dir, ".git", "objects")
+        objects_dir = os.path.join(git_dir, "objects")
 
         object_file = os.path.join(objects_dir, sha1[:2], sha1[2:])
         os.makedirs(os.path.dirname(object_file), exist_ok=True)
-        print(object_file)
+        print(f"object_file: {object_file}")
         with open(object_file, 'wb') as f:
             f.write(sha1.encode('utf-8'))
 

@@ -17,9 +17,8 @@ add_parser.add_argument("--all", "-A", action="store_true", help="Add all files 
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
-    print(argv)
     args = argparser.parse_args(argv)
-    print(args)
+    print(f"args : {args}")
     if args.command == "init":
         path = args.path
         init.main(path)
@@ -31,7 +30,7 @@ def main(argv=None):
         git_dir = os.path.join(root, ".git")
         if not git_dir:
             raise Exception("Not a git repository (or any of the parent directories): .git")
-        files = []
+        file_toadd = []
         root_path = Path(os.path.abspath(root)).resolve()
         git_path = Path(os.path.abspath(git_dir)).resolve()
         if args.all:
@@ -40,19 +39,21 @@ def main(argv=None):
                     file_path = Path(os.path.abspath(os.path.join(dirpath, filename))).resolve()
                     if file_path.is_relative_to(git_path):
                         continue
-                    files.append(os.path.relpath(file_path, root_path))
+                    file_toadd.append(os.path.relpath(file_path, root_path))
         else:
             files = args.files
             for file in files:
                 file_path = Path(os.path.abspath(os.path.join(".", file))).resolve()
+                print(file_path)
                 if not os.path.exists(file_path):
                     raise Exception(f"Pathspec '{file}' did not match any files")
                 if not file_path.is_relative_to(root_path):
                     raise Exception(f"Pathspec '{file}' is outside of the repository root '{root}'")
                 if file_path.is_relative_to(git_path):
                     continue
-                files.append(os.path.relpath(file_path, root))
+                file_toadd.append(os.path.relpath(file_path, root))
         objects_dir = os.path.join(git_dir, "objects")
         if not os.path.exists(objects_dir):
             raise Exception(f"Objects directory '{objects_dir}' does not exist in the repository")
-        add.main(git_dir, files)
+        print(f"git add files: {files}")
+        add.main(git_dir, file_toadd)
