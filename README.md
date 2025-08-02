@@ -1,2 +1,2 @@
 # self-design-git
-follow the "write yourself a git" blog and write a git 
+## not following the blog but write my own style git 
