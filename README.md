@@ -9,3 +9,5 @@
 ## decide not write binary, write just strings and integers
 ## solve the problem add same file twice, it will not add the same file again, but update the content hash in index
 ## doing it in a bruteforce way,read index every add time and compare every thing, recreate objects every time 
+# in commit, bruteforce over index and find file path and hash we want 
+## decide not to write binary, but just write string

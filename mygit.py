@@ -8,6 +8,7 @@ import mygit_ls_index as ls_index
 from helper import find_git_repo, read_index
 from pathlib import Path
 from helper import TrackedFile
+import mygit_commit as commit
 
 argparser = argparse.ArgumentParser(description="The stupidest content tracker")
 argsubparsers = argparser.add_subparsers(title="Commands", dest="command")
@@ -22,6 +23,9 @@ add_parser.add_argument("--all", "-A", action="store_true", help="Add all files 
 
 ls_parser = argsubparsers.add_parser("ls-index", help="List files in the index")
 
+commit_parser = argsubparsers.add_parser("commit", help="Record changes to the repository")
+commit_parser.add_argument("-m", "--message", required=True, help="Commit message")
+
 def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
@@ -33,3 +37,5 @@ def main(argv=None):
         ls_index.main()
     elif args.command == "add":
         add.main(args)
+    elif args.command == "commit":
+        commit.main(args.message)

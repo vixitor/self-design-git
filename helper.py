@@ -2,6 +2,31 @@ import configparser
 import os
 import hashlib
 
+def build_tree(path, files, git_repo):
+    tree = Tree(path)
+    for entry in os.listdir(path):
+        entry_path = os.path.join(path, entry)
+        if os.path.isfile(entry_path):
+            for file in files:
+                print(entry_path, os.path.join(git_repo, file.file_path))
+                if os.path.join(git_repo, file.file_path) == entry_path:
+                    print(path, file.file_path)
+                    tree.add((file.file_path, file.file_hash))
+        else:
+            if entry == ".git":
+                continue
+            sub_file = []
+            for file in files:
+                if file.file_path.startswith(entry + os.sep):
+                    sub_file.append(file)
+            sub_tree = build_tree(entry_path, sub_file, git_repo)
+            if not sub_tree.empty():
+                tree.add((sub_tree.path, sub_tree.hash))
+    if not tree.empty():
+        tree.cal_hash()
+        tree.write()
+    return tree
+
 def find_git_repo(path):
     current_path = os.path.abspath(path)
     while current_path != os.path.dirname(current_path):
@@ -11,13 +36,15 @@ def find_git_repo(path):
         current_path = os.path.dirname(current_path)
     raise Exception("Not a git repository (or any of the parent directories): .git")
 
-def git_blob_sha1(filepath):
+def git_sha1(filepath):
+    """
+    use abs file path
+    """
+    print(f"in git_sha1: file path {filepath}")
     with open(filepath, 'rb') as f:
         data = f.read()
-    size = len(data)
-    header = f"blob {size}\0".encode("utf-8")
-    full = header + data
-    return hashlib.sha1(full).hexdigest()
+    return hashlib.sha1(data).hexdigest()
+
 
 def create_blob(file_hash, git_dir):
     objects_dir = os.path.join(git_dir,"objects")
@@ -50,14 +77,12 @@ def read_index(index_path):
 
 
 class TrackedFile:
-    file_path = None
-    file_hash = None
-    git_dir = None
     def __init__(self, file_path, file_hash=None, git_dir=None):
         self.file_path = file_path
-        self.git_dir = git_dir or self.get_git_dir()
+        self.git_dir = git_dir or os.path.join(find_git_repo(self.file_path),".git")
+        self.abs_path = os.path.join(os.path.dirname(self.git_dir), file_path)
         if file_hash is None:
-            self.file_hash = git_blob_sha1(file_path)
+            self.file_hash = git_sha1(self.abs_path)
         else:
             self.file_hash = file_hash
 
@@ -65,20 +90,45 @@ class TrackedFile:
         create_blob(self.file_hash, self.git_dir)
         write_index(self.file_path, self.file_hash, self.git_dir)
 
-    def get_git_dir(self):
-        return self.git_dir or os.path.join(find_git_repo(self.file_path),".git")
-
     def recalculate_hash(self):
-        self.file_hash = git_blob_sha1(self.file_path)
+        self.file_hash = git_sha1(self.abs_path)
 
     def __repr__(self):
         return f"TrackedFile(file_path={self.file_path}, file_hash={self.file_hash}, git_dir={self.git_dir})"
 
+class Tree:
+    def __init__(self, path, git_dir=None):
+        self.hash = None
+        self.entry = []
+        if not git_dir:
+            self.git_dir = os.path.join(find_git_repo(path), ".git")
+        self.path = path
+
+    def add(self, file):
+        self.entry.append(file)
+
+    def empty(self):
+        return len(self.entry) == 0
+
+    def cal_hash(self):
+        data = b""
+        for e in self.entry:
+            data += e[0].encode('utf-8') + b'\0' + bytes.fromhex(e[1])
+        self.hash = hashlib.sha1(data).hexdigest()
+        return self.hash
+
+    def write(self):
+        if not self.hash:
+            self.cal_hash()
+        object_path = os.path.join(self.git_dir, "objects", self.hash[:2], self.hash[2:])
+        os.makedirs(os.path.dirname(object_path), exist_ok=True)
+        with open(object_path, 'wb') as f:
+            for entry in self.entry:
+                f.write(entry[0].encode('utf-8') + b'\0' + bytes.fromhex(entry[1]))
+
+    def __repr__(self):
+        return f"Tree(path={self.path}, hash={self.hash}, git_dir={self.git_dir}, entry={self.entry})"
 class GitRepository:
-
-    repo_path = None
-    git_dir = None
-
     def __init__(self, path):
         if not os.path.isdir(path):
             os.mkdir(path)

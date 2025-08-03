@@ -1,6 +1,5 @@
-from linecache import cache
 
-from helper import TrackedFile, find_git_repo, git_blob_sha1, read_index
+from helper import TrackedFile, find_git_repo, read_index
 import os
 from pathlib import Path
 def main(args):
