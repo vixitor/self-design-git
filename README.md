@@ -11,3 +11,4 @@
 ## doing it in a bruteforce way,read index every add time and compare every thing, recreate objects every time 
 # in commit, bruteforce over index and find file path and hash we want 
 ## decide not to write binary, but just write string
+## find i don't know what i am doing a week ago, this may stop for a while 
