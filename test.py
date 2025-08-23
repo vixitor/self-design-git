@@ -10,7 +10,8 @@ if os.path.exists("final_test"):
         print("\033[31m remove final_test failed \033[0m")
         print(result.stderr)
         exit(1)
-
+os.mkdir("final_test")
+os.chdir("final_test")
 
 print("input the name or address of the tool:")
 tool = input().strip()
