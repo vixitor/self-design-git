@@ -29,4 +29,8 @@
   - index采用csv格式存读，和git的二进制不一样，用os.system touch建立index
   - 计算哈希，存入objects中，读取index，如果文件哈希改变了才更新，如果文件不存在，直接加入到最后，然后再排序
 - commit -m "message"
+  - commit构造tree，tree存放文件名和对应的哈希
+  - tree存放在objects中，哈希计算方式和文件一样
+  - 还没有支持branch，先建立一个head，存当前的提交哈希，现在的设计还没有支持多分支，没有refs文件
+  - 现在.sjy中建一个HEAD
 

@@ -6,4 +6,5 @@ def init():
         os.mkdir(".sjy")
         os.mkdir(".sjy/objects")
         os.system("touch .sjy/index")
+        os.system("touch .sjy/HEAD")
         print("\033[32m Repository initialized \033[0m")
