@@ -10,6 +10,7 @@ def main():
     add_parser.add_argument("file", nargs=1)
     commit_parser = subparser.add_parser("commit")
     commit_parser.add_argument("-m", "--message", nargs=1)
+    log_parser = subparser.add_parser("log")
     args = parser.parse_args()
     match args.command:
         case "init":
@@ -22,5 +23,8 @@ def main():
         case "commit":
             from scripts.commit import commit
             commit(args.message[0])
+        case "log":
+            from scripts.log import log
+            log()
         case _:
             print("\033[31m Unknown command \033[0m")
