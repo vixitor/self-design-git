@@ -33,4 +33,6 @@
   - tree存放在objects中，哈希计算方式和文件一样
   - 还没有支持branch，先建立一个head，存当前的提交哈希，现在的设计还没有支持多分支，没有refs文件
   - 现在.sjy中建一个HEAD
+  - commit存在objects中，内容包括tree的哈希，parent的哈希 ， message
+看似完成了commit，只有一个简单的commit测试，还没有在复杂场景下测试，而且没有checkout实际没有任何用处，接下来打算写log，checkout
 
