@@ -1,6 +1,6 @@
 import os
 
-from helper import find_working_repo, cal_hash, build_tree
+from scripts.helper import find_working_repo, build_tree
 def commit(message):
     working_repo = find_working_repo()
     commit_data = []

@@ -35,4 +35,8 @@
   - 现在.sjy中建一个HEAD
   - commit存在objects中，内容包括tree的哈希，parent的哈希 ， message
 看似完成了commit，只有一个简单的commit测试，还没有在复杂场景下测试，而且没有checkout实际没有任何用处，接下来打算写log，checkout
+  - log
+    - 读取HEAD，找到当前commit的哈希，然后读取commit对象，打印message，然后找到parent的哈希，继续打印，直到parent为空
+  - status
+    - 实现和git的功能有所不同，目前只打算读取index，和当前工作目录对比
 

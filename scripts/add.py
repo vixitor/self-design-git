@@ -1,6 +1,6 @@
 import os.path
 import csv
-from helper import find_working_repo, cal_hash
+from scripts.helper import find_working_repo, cal_hash
 
 def add(file):
     if not os.path.exists(file):
