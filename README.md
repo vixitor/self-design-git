@@ -1,4 +1,4 @@
-这个项目是仿照git的逻辑来实现一个版本控制系统的，主要功能包括：
+**这个项目是仿照git的逻辑来实现一个版本控制系统的，主要功能包括：**
 - 初始化仓库
 - 添加文件到暂存区
 - 提交更改
@@ -8,11 +8,25 @@
 - 移动到分支或某次提交
 先来设计一下语法
 - 主体是sjy 
-- 初始化仓库 sjy init 只能在当前文件夹下面初始化，建立一个类似于.git的文件夹
-- 添加文件到暂存区 sjy add <file>，只能显式指定文件
-- 提交更改 sjy commit -m "message"，只能严格按照这种形式
-- 查看状态 sjy status，列出各个文件的状态，有没有被追踪，用不同颜色的文字显示
-- 查看提交历史 sjy log，列出当前分支的所有提交信息
-- 创建分支 sjy branch <branch_name>
-- 移动到分支或某次提交 sjy checkout <branch_name or commit_id>
+- sjy init
+- sjy add <file>
+- sjy commit -m "message"
+- sjy status
+- sjy log
+- sjy branch <branch_name>
+- sjy checkout <branch_name or commit_id>
+
 先写一个test 工具
+
+**具体行为**
+- init
+  - 在当前目录下建立.sjy文件夹，如果已经有了这个文件夹就不做操作（和git行为不一样，git会重写某些东西，具体可以问gpt）
+  - .sjy文件夹下面会有一些文件夹或文件，等用到再说
+- add <file>
+  - 默认一次只能添加一个文件
+  - 在.sjy/index中存文件的相对workind-repo的相对路径和内容的哈希，如果这个文件已经被放在index中可能要更新哈希
+  - 把文件压缩之后存在.sjy/objects中的文件里面，这个文件的地址做法和git类似，前两位作为文件夹名字，后面的作为文件名，压缩用gzip压缩，然后二进制存储
+  - index采用csv格式存读，和git的二进制不一样，用os.system touch建立index
+  - 计算哈希，存入objects中，读取index，如果文件哈希改变了才更新，如果文件不存在，直接加入到最后，然后再排序
+- commit -m "message"
+
