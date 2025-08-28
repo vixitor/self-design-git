@@ -12,6 +12,8 @@ def main():
     commit_parser.add_argument("-m", "--message", nargs=1)
     log_parser = subparser.add_parser("log")
     status_parser = subparser.add_parser("status")
+    checkout_parser = subparser.add_parser("checkout")
+    checkout_parser.add_argument("commit_hash", nargs=1)
     args = parser.parse_args()
     match args.command:
         case "init":
@@ -30,5 +32,8 @@ def main():
         case "status":
             from scripts.status import status
             status()
+        case "checkout":
+            from scripts.checkout import checkout
+            checkout(args.commit_hash[0])
         case _:
             print("\033[31m Unknown command \033[0m")

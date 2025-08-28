@@ -24,7 +24,7 @@
   - .sjy文件夹下面会有一些文件夹或文件，等用到再说
 - add <file>
   - 默认一次只能添加一个文件
-  - 在.sjy/index中存文件的相对workind-repo的相对路径和内容的哈希，如果这个文件已经被放在index中可能要更新哈希
+  - 在.sjy/index中存文件的相对working-repo的相对路径和内容的哈希，如果这个文件已经被放在index中可能要更新哈希
   - 把文件压缩之后存在.sjy/objects中的文件里面，这个文件的地址做法和git类似，前两位作为文件夹名字，后面的作为文件名，压缩用gzip压缩，然后二进制存储
   - index采用csv格式存读，和git的二进制不一样，用os.system touch建立index
   - 计算哈希，存入objects中，读取index，如果文件哈希改变了才更新，如果文件不存在，直接加入到最后，然后再排序
@@ -40,3 +40,10 @@
   - status
     - 实现和git的功能有所不同，目前只打算读取index，和当前工作目录对比
     - 处理一下在add中文件不存在的情况，为了应对删除文件的情况
+  - checkout commit-id
+    - 现在还没有支持branch，所以只能checkout commit-id
+    - 读取commit对象，找到tree的哈希，然后读取tree对象，找到文件名和哈希，然后从objects中读取文件内容，写入工作目录
+    - checkout 之前不会检查当前工作目录的状态，直接覆盖
+    - 要更新HEAD，HEAD存commit-id
+    - 要更新index
+    - 像git一样，先更新index，然后根据index更新工作目录

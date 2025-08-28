@@ -50,3 +50,20 @@ def build_tree(working_repo, current_repo, tracked_files):
         return tree_hash
     else :
         return None
+
+def update_index(working_repo, tree_hash):
+    index_path = os.path.join(working_repo, ".sjy", "index")
+    data = []
+    tree_path = os.path.join(working_repo, ".sjy", "objects", tree_hash[:2], tree_hash[2:])
+    with open(tree_path, 'rb') as tree_file:
+        lines = tree_file.read().decode('utf-8').split('\n')
+        for line in lines:
+            if line:
+                type, hash, path = line.split(' ', 2)
+                if type == 'blob':
+                    data.append([path, hash])
+                elif type == 'tree':
+                    sub_tree_hash = hash
+                    sub_data = update_index(working_repo, sub_tree_hash)
+                    data.extend(sub_data)
+    return data
