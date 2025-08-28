@@ -39,4 +39,4 @@
     - 读取HEAD，找到当前commit的哈希，然后读取commit对象，打印message，然后找到parent的哈希，继续打印，直到parent为空
   - status
     - 实现和git的功能有所不同，目前只打算读取index，和当前工作目录对比
-
+    - 处理一下在add中文件不存在的情况，为了应对删除文件的情况

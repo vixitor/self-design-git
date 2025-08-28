@@ -2,11 +2,24 @@ import os.path
 import csv
 from scripts.helper import find_working_repo, cal_hash
 
+
 def add(file):
-    if not os.path.exists(file):
-        print("\033[31m File does not exist \033[0m")
-        return
     working_repo = find_working_repo()
+    if not os.path.exists(file):
+        index_path = os.path.join(working_repo, ".sjy", "index")
+        with open(index_path, 'r',encoding="utf-8") as index_file:
+            reader = csv.reader(index_file)
+            data = list(reader)
+        for i, row in enumerate(data):
+            if row[0] == os.path.relpath(file, working_repo):
+                del data[i]
+                print("\033[32m File removed from index \033[0m")
+                break
+        with open(index_path, 'w', newline='',encoding="utf-8") as index_file:
+            writer = csv.writer(index_file)
+            writer.writerows(data)
+        return
+
     rel_path = os.path.relpath(file, working_repo)
     hash = cal_hash(file)
     obj_path = os.path.join(working_repo, ".sjy", "objects")
